@@ -1,0 +1,39 @@
+ module tb_Moore();
+
+    // Inputs
+    reg x;
+    reg clock;
+    reg reset;
+
+    // Outputs
+    wire y;
+
+    // Instantiate the Unit Under Test (UUT)
+    Moore uut (
+        .y(y), 
+        .x(x), 
+        .clock(clock), 
+        .reset(reset)
+    );
+
+    initial begin
+    
+        // Initialize Inputs
+        x = 0; clock = 0;reset = 1;
+        #10 x = 0; reset = 0;
+        #10 x = 1;
+        #10 x = 0;
+        #10 x = 1;
+        #10 x = 0;
+        #10 x = 1;
+
+        // Wait 100 ns for global reset to finish
+        #100;
+        
+        // Add stimulus here
+
+    end
+    
+        always #5 clock = ~clock;
+        
+endmodule

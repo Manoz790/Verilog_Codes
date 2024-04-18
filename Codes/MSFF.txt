@@ -1,0 +1,29 @@
+ module MS_FF(j,k,clk,q,qb );
+input j,k,clk;
+output q,qb;
+reg q,qb,tq;
+initial
+begin
+q=1'b0;
+qb=1'b1;
+end
+always @(clk)
+begin
+if(clk)
+begin
+if(j==1'b0 && k==1'b0)
+tq=tq;
+else if(j==1'b0 && k==1'b1)
+tq=1'b0;
+else if(j==1'b1 && k==1'b0)
+tq=1'b1;
+else if(j==1'b1 && k==1'b1)
+tq=~tq;
+end
+if(!clk)
+begin
+q=tq;
+qb=~tq;
+end
+end
+endmodule

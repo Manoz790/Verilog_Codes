@@ -1,0 +1,17 @@
+ module T_FF(tin,rst,clk,q,qbar );
+input tin,rst,clk;
+output q,qbar;
+reg tq;
+always@(posedge clk or negedge rst)
+begin
+if(!rst)
+tq=0;
+else
+begin
+if(tin)
+tq=~tq;
+end
+end
+assign q=tq;
+assign qbar=~q;
+endmodule

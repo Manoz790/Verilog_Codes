@@ -1,0 +1,19 @@
+ module tb_JK_FF( );
+reg clk;
+reg [1:0]jk;
+wire q,qbar;
+JK_FF abc(jk,clk,q,qbar);
+initial
+clk=1'b0;
+always
+#10 clk=~clk;
+initial
+begin
+//$monitor($time,"q=%d","qb=%d",q,qb);
+jk=2'b00;
+#30 jk=2'b01;
+#30 jk=2'b10;
+#30 jk=2'b11;
+#30 $finish;
+end 
+endmodule

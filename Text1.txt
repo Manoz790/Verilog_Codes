@@ -1,0 +1,173 @@
+# SILVACO International
+#
+#######################################################################
+# 100 nm gate length AlGaAs/GaAs HEMT #
+# Id-Vg and Id-Vd Characteristics #
+# #
+# Input File for EG-355 (Quantum Devices 3) #
+# by Karol Kalna #
+# (c) November 2017, Swansea University #
+#######################################################################
+
+go atlas
+Title HEMT Id-Vd and Id-Vg characteristics
+
+#####################################################
+# SECTION 1: Mesh input
+#####################################################
+
+# All mesh dimensions in micro-meters [um]
+mesh
+
+# X-direction mesh definition
+x.mesh loc=-0.35 spac=0.01
+x.mesh loc=-0.11 spac=0.005
+x.mesh loc= 0.11 spac=0.005
+x.mesh loc= 0.35 spac=0.01
+
+# Y-direction mesh definition
+y.mesh loc=-0.02 spac=0.01
+y.mesh loc=0.0 spac=0.005
+y.mesh loc=0.03 spac=0.001
+y.mesh loc=0.045 spac=0.001
+y.mesh loc=0.055 spac=0.001
+y.mesh loc=0.5 spac=0.05
+y.mesh loc=1.0 spac=0.5
+
+
+####################################################
+# SECTION 2: Structure Specification
+####################################################
+# Define material regions
+region num=1 material=GaAs y.min=0.0 y.max=1.0
+region num=2 material=AlGaAs y.min=0.045 y.max=0.5 x.composition=0.2
+region num=3 material=GaAs y.min=0.03 y.max=0.045
+region num=4 material=AlGaAs y.min=0.0 y.max=0.03 x.composition=0.2
+region num=5 oxide y.min=-0.02 y.max=0
+
+# Define contacts
+elec num=1 name=source x.min=-0.35 x.max=-0.25 y.min=-0.02 y.max=0.03
+elec num=2 name=gate x.min=-0.05 x.max=0.05 y.min=-0.02 y.max=0.0
+elec num=3 name=drain x.min=0.25 x.max=0.35 y.min=-0.02 y.max=0.03
+
+
+# Define doping
+doping uniform y.min=0.0 y.max=0.02 n.type conc=1.e18
+doping uniform y.min=0.02 n.type conc=1.e15
+doping uniform x.min=-0.35 x.max=-0.25 y.min=0.03 y.max=0.031 \
+n.type conc=1.e18
+doping uniform x.min=0.25 x.max=0.35 y.min=0.03 y.max=0.031 \
+n.type conc=1.e18
+
+####################################################
+# Define interface charge
+#interface x.min=0 x.max=0.7 y.min=-0.01 y.max=0.005 qf=-1.e12
+
+
+#####################################################
+# SECTION 3: Material Models
+#####################################################
+
+# Carrier lifetimes for Shockley-Read-Hall (SRH) Recombination
+material taun0=1.0e-9 taup0=1.0e-9
+
+# Material parameters
+material material=AlGaAs mun=2000 mup=350 affinity=3.82 nc300=5.7e17
+material material=GaAs mun=5000 mup=500 affinity=4.07 betan=2.0
+
+
+# Mobility models and 1D Schrodinger solver across the channel.
+models fldmob N.SCHRO sp.geom=1DX srh
+models material=AlGaAs conmob
+
+
+# Gate workfunction [eV]
+contact name=gate workfun=5.0
+
+
+#####################################################
+# SECTION 4: Used methods and initial solution
+#####################################################
+method gummel newton carriers=1 elect
+output con.band val.band
+
+#Solve at equlibrium.
+solve init
+
+#
+####################################################
+# Save and then plot mesh, geometry and doping profile
+#save outf=HEMT-layout.str
+#tonyplot HEMT-layout.str
+#quit
+
+
+#####################################################
+# SECTION 6: Id-Vg calculation
+#####################################################
+log off
+# Solution definitions:
+# A single bias point:
+solve vgate=0.0 vdrain=0.001
+# A single bias point:
+solve vgate=0.0 vdrain=0.01
+
+# Multiple bias points:
+# Rump up to the drain bias [V] starting at 0.0 V]
+solve vgate=0.0 name=drain vdrain=0.02 vstep=0.02 vfinal=0.1
+#solve vgate=0.0 name=drain vdrain=0.02 vstep=0.02 vfinal=0.1
+#solve vgate=0.0 name=drain vdrain=0.2 vstep=0.1 vfinal=3.0
+
+# Record Id-Vg characteristics
+log outf=HEMT_Id-Vg.log master
+# Rump up to the gate bias
+solve vdrain=0.1 name=gate vgate=0.0 vstep=0.1 vfinal=1.0
+#solve vdrain=3.0 name=gate vgate=0.0 vstep=0.1 vfinal=1.0
+
+# Save and then plot
+save outf=HEMT_Id-Vg.str
+tonyplot HEMT_Id-Vg.log
+quit
+
+#####################################################
+# SECTION 7: Id-Vd calculation
+#####################################################
+log off
+
+# Solution definitions:
+# Define gate bias
+solve vdrain=0.0 name=gate vgate=0.0 vstep=0.1 vfinal=0.3
+
+# Record Id-Vd characteristics
+log outf=HEMT_Id-Vd.log master
+# Rump up to the drain bias
+# A single bias point:
+solve vgate=0.3 vdrain=0.001
+# A single bias point:
+solve vgate=0.3 vdrain=0.01
+
+# Multiple bias points:
+solve vgate=0.3 name=drain vdrain=0.02 vstep=0.02 vfinal=0.1
+solve vgate=0.3 name=drain vdrain=0.2 vstep=0.1 vfinal=1.0
+
+# Save and then plot
+save outf=HEMT_Id-Vd.str
+tonyplot HEMT_Id-Vd.log
+quit
+
+
+
+
+public static void GetAttendance()
+        {
+            int IS_FULL_TIME = 1;
+            Random random = new Random();
+            int empCheck = random.Next(0, 2);
+            if (empCheck == IS_FULL_TIME)
+                Console.WriteLine("Employee is present");
+            else
+                Console.WriteLine("Employee is absent");
+        }
+
+
+UC5_CalculateWagesFor20DaysInMonth

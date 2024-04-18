@@ -1,0 +1,43 @@
+ module tb_SLSR();
+reg clk, reset, din, sl, sr;
+wire [7:0] q;
+SLSR s0(sl, sr, din, clk, reset, q);
+initial begin
+forever begin
+clk <= 0;
+#5
+clk <= 1;
+#5
+clk <= 0;
+end
+end
+
+initial begin
+reset = 1;
+#12
+reset = 0;
+#90
+reset = 1;
+#12
+reset = 0;
+end
+
+initial begin
+sl = 1;
+sr = 0;
+#50
+sl = 0;
+#12
+sr = 1;
+end
+
+initial begin
+forever begin
+din = 0;
+#7
+din = 1;
+#8
+din = 0;
+end
+end
+endmodule

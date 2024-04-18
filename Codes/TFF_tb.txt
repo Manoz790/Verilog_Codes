@@ -1,0 +1,22 @@
+ module tb_T_FF( );
+reg tin,rst,clk; 
+wire q,qbar; 
+T_FF t1(tin,rst,clk,q,qbar);
+initial
+clk=1'b0;
+always #10 clk= ~clk;
+initial
+begin
+rst=1'b0; tin=1'b0;
+#30 rst=1'b1;
+#10 tin=1'b1;
+#205 tin=1'b0;
+#300 tin=1'b1;
+#175 tin=1'b0;
+#280 rst=1'b0;
+#20 rst=1'b1;
+#280 tin=1'b1;
+end
+initial
+#2000 $finish;
+endmodule

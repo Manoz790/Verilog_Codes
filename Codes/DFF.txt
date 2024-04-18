@@ -1,0 +1,17 @@
+ module D_FF(d,clk,q,qbar);
+input d,clk;
+output q,qbar; 
+reg q,qbar;
+initial
+begin
+q=0;
+end
+always@(posedge clk)
+begin
+if(d==0)
+q=0;
+else
+q=1;
+qbar=~q;
+end
+endmodule

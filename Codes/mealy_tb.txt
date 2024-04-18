@@ -1,0 +1,42 @@
+ module Moore(y, x, clock, reset);
+    input  x, clock, reset;
+    output y;
+
+    reg y;
+     reg [1:0] Next_state;
+
+    parameter s0 = 2'b00, s1 = 2'b01, s2 = 2'b10;
+
+    always @ (posedge clock)
+    begin
+        if (reset)  
+        begin
+            Next_state  =  s0;               
+            y = 1'b0;
+        end
+
+    case (Next_state)
+            s0:begin
+                    y = 1'b0;
+                    if (x) 
+                        Next_state = s0;
+                    else 
+                        Next_state = s1;
+                end
+            s1:begin
+                    y = 1'b0;
+                    if (x) 
+                        Next_state = s2;
+                    else 
+                        Next_state = s1;
+                end
+            s2:begin
+                    y = 1'b1;
+                    if (x) 
+                        Next_state = s0;
+                    else
+                        Next_state = s1;
+                end
+        endcase
+    end
+endmodule

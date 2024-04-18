@@ -1,0 +1,50 @@
+ module shifter(res, vin, dir, type, length);
+output [7:0] res;
+input [7:0] vin;
+input dir;
+input [1:0] type;
+input [2:0] length;
+
+reg [7:0] vout;
+
+always @(vin or dir or type or length)
+begin
+case ({dir, type})
+3'b0_00: vout = vin >> length;
+3'b0_01: case(length)
+3'b000: vout = vin;
+3'b001: vout = {vin[7], vin[7:1]};
+3'b010: vout = {{2{vin[7]}}, vin[7:2]};
+3'b011: vout = {{3{vin[7]}}, vin[7:3]};
+3'b100: vout = {{4{vin[7]}}, vin[7:4]};
+3'b101: vout = {{5{vin[7]}}, vin[7:5]};
+3'b110: vout = {{6{vin[7]}}, vin[7:6]};
+3'b111: vout = {{7{vin[7]}}, vin[7]};
+endcase
+3'b0_10: case(length)
+3'b000: vout = vin;
+3'b001: vout = {vin[0], vin[7:1]};
+3'b010: vout = {vin[1:0], vin[7:2]};
+3'b011: vout = {vin[2:0], vin[7:3]};
+3'b100: vout = {vin[3:0], vin[7:4]};
+3'b101: vout = {vin[4:0], vin[7:5]};
+3'b110: vout = {vin[5:0], vin[7:6]};
+3'b111: vout = {vin[6:0], vin[7]};
+endcase
+3'b1_00: vout = vin << length;
+3'b1_01: vout = {vin[7], vin[6:0] << length};
+3'b1_10: case(length)
+3'b000: vout = vin;
+3'b001: vout = {vin[6:0], vin[7]};
+3'b010: vout = {vin[5:0], vin[7:6]};
+3'b011: vout = {vin[4:0], vin[7:5]};
+3'b100: vout = {vin[3:0], vin[7:4]};
+3'b101: vout = {vin[2:0], vin[7:3]};
+3'b110: vout = {vin[1:0], vin[7:2]};
+3'b111: vout = {vin[0], vin[7:1]};
+endcase
+default: vout = vin;
+endcase
+end
+assign res = vout;
+endmodule

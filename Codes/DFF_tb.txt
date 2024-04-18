@@ -1,0 +1,16 @@
+ module tb_D_FF();
+reg d,clk;
+wire q,qbar;
+D_FF dl(d,clk,q,qbar);
+initial
+clk=1'b0;
+always #10 clk=~clk;
+initial
+begin
+//$monitor($time,"q=%d","qbar=%d",q,qbar);
+d=1'b0;
+#30 d=1'b1;
+#30 d=1'b0;
+#30 $finish;
+end 
+endmodule

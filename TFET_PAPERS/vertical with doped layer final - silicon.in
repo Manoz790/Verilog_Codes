@@ -1,0 +1,142 @@
+go atlas
+mesh space.mult=1.0
+x.mesh loc=0.000 spac=0.005
+x.mesh loc=0.002 spac=0.001
+x.mesh loc=0.004 spac=0.0008
+x.mesh loc=0.007 spac=0.005
+x.mesh loc=0.009 spac=0.0005
+x.mesh loc=0.01 spac=0.0005
+x.mesh loc=0.013 spac=0.0005
+x.mesh loc=0.015 spac=0.005
+x.mesh loc=0.016 spac=0.001
+x.mesh loc=0.018 spac=0.005
+x.mesh loc=0.021 spac=0.001
+x.mesh loc=0.023 spac=0.0008
+x.mesh loc=0.025 spac=0.001
+x.mesh loc=0.028 spac=0.0008
+x.mesh loc=0.030 spac=0.001
+
+y.mesh loc=-0.002 spac=0.001
+y.mesh loc=0.000 spac=0.001
+y.mesh loc=0.002 spac=0.0008
+y.mesh loc=0.005 spac=0.001
+y.mesh loc=0.010 spac=0.0008
+y.mesh loc=0.014 spac=0.001
+y.mesh loc=0.019 spac=0.0002
+y.mesh loc=0.025 spac=0.0002
+y.mesh loc=0.031 spac=0.0005
+y.mesh loc=0.037 spac=0.001
+y.mesh loc=0.045 spac=0.0008
+y.mesh loc=0.050 spac=0.001
+y.mesh loc=0.055 spac=0.001
+y.mesh loc=0.058 spac=0.0008
+y.mesh loc=0.06 spac=0.001
+y.mesh loc=0.065 spac=0.001
+y.mesh loc=0.073 spac=0.0008
+y.mesh loc=0.080 spac=0.001
+
+
+
+
+#Defining regions of the device
+
+region num=1  y.min=-0.002 y.max=0.08   x.min=0.00  x.max=0.030    material=air
+region num=2  y.min=0.06  y.max=0.08   x.min=0.00  x.max=0.030    material=silicon
+
+
+region num=3  y.min=0.04  y.max=0.06   x.min=0.01  x.max=0.020    material=silicon
+region num=4  y.min=0.02  y.max=0.04   x.min=0.01  x.max=0.020    material=silicon
+
+  
+region num=5  y.min=0.00  y.max=0.02   x.min=0.01  x.max=0.020    material=silicon
+
+  
+region num=6  y.min=0.02  y.max=0.04   x.min=0.008 x.max=0.01     material=hfo2
+#region num=7  y.min=0.02  y.max=0.025   x.min=0.01  x.max=0.013    material=gasb
+#region num=71  y.min=0.02  y.max=0.025   x.min=0.017  x.max=0.020    material=gasb
+
+
+region num=8 y.min=0.02  y.max=0.04   x.min=0.02  x.max=0.022    user.material=hfo2
+
+
+electrode name=drain  y.min=0.058  y.max=0.06  x.min=0.024  x.max=0.03
+
+
+electrode name=drain2  y.min=0.058  y.max=0.06  x.min=0.00   x.max=0.006     
+electrode name=gate   y.min=0.02   y.max=0.04  x.min=0.022  x.max=0.023
+electrode name=gate2  y.min=0.02   y.max=0.04  x.min=0.007  x.max=0.008
+electrode name=source y.min=-0.002 y.max=0.00  x.min=0.01   x.max=0.02 
+
+
+doping uniform n.type conc=5e18 reg=2 
+doping uniform n.type conc=5e18 reg=3   
+doping uniform p.type conc=5e16 reg=4
+doping uniform p.type conc=1e19 reg=5
+#doping uniform n.type conc=7e18 reg=7
+
+material material=Silicon me.tunnel=0.20 mh.tunnel=0.24 region=4
+material material=gasb me.tunnel=0.0410 mh.tunnel=0.4 region=5
+
+
+material material=hfo2 user.group=insulator user.default=oxide permittivity=20
+
+
+interf qf=0
+
+contact name=gate workfunction=4.38
+contact name=gate2 common=gate
+contact name=source
+contact name=drain 
+contact name=drain2 common=drain
+
+qtx.mesh   loc=0.009                spac=0.0001
+qtx.mesh   loc=0.012                spac=0.0001
+qtx.mesh   loc=0.021                spac=0.0001
+#qtx.mesh   loc=0.025                spac=0.0001
+#qtx.mesh   loc=0.030                spac=0.001
+
+qty.mesh   loc=0.01               spac=0.0001
+qty.mesh   loc=0.03               spac=0.0002
+qty.mesh   loc=0.055               spac=0.0002
+qty.mesh   loc=0.060              spac=0.001
+#qty.mesh   loc=0.080                spac=0.001
+
+
+models conmob bgn srh cvt fermi ni.fermi qtunn.dir=ydir bbt.nonlocal
+output val.band con.band u.bbt charge e.lines band.param
+method newton trap
+
+
+ 
+solve init
+
+solve vdrain=0 vstep=0.1 name=drain vfinal=0.5
+
+log outf=vtfet_si.log
+
+solve ac frequency=1e6 vgate=0 vstep=0.1 name=gate vfinal=1
+
+
+
+
+
+tonyplot vtfet_si.log
+
+save outf=vtfet_si.str
+tonyplot vtfet_si.str
+extract name="subvt" \
+        1.0/slope(maxslope(curve(v."gate",log10(abs(i."drain")))))
+
+
+extract name="Ioff_n" y.val from curve(v."gate",i."drain") where x.val=0
+extract name="Ion_n" y.val from curve(v."gate",i."drain") where x.val=1.0
+extract name="Ion_Ioff" $Ion_n/$Ioff_n
+
+extract name="gm_si" curve (v."gate",dydx (v."gate",i."drain")) outf="gm_si.dat"
+
+
+quit
+
+
+
+

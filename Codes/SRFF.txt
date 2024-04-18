@@ -1,0 +1,15 @@
+module SR_FF(s,r,clk,q, qbar );
+input s,r,clk;
+inout q,qbar;
+wire d,e;
+nand1 g0(s,clk,d);
+nand1 g1(r,clk,e);
+nand1 g2(d,qbar,q);
+nand1 g3(e,q,qbar);
+endmodule
+module nand1(a,b,y);
+input a,b;
+output y;
+assign y=~(a&b);
+endmodule
+ 

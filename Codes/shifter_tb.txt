@@ -1,0 +1,30 @@
+ module tb_shifter();
+
+reg clk, dir;
+reg [1:0] type;
+reg [2:0] length;
+reg [7:0] vin;
+
+wire [7:0] res;
+
+shifter shift1(res, vin, dir, type, length);
+
+initial
+begin
+clk = 0;
+dir = 1;
+type = 1;
+length = 3;
+vin = 'b11110110;
+
+$display("dir = %d type = %d length = %d vin = %b", dir, type, length, vin);
+
+#10 $display("done");
+
+$finish;
+end
+
+always #5 clk = !clk;
+always @(posedge clk)
+$strobe("res: %b", res);
+endmodule
